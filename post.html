@@ -21,6 +21,7 @@ button.ghost{background:#fff;border:1px solid var(--line);border-radius:10px;pad
 <div id="list"><p class="meta">読み込み中…</p></div>
 <script>
 const FN="https://frdysmukoqmajaatjtfd.supabase.co/functions/v1/tiktok";
+const _h=new URLSearchParams(location.hash.slice(1)); if(_h.get("k")){try{localStorage.setItem("deed_ui_secret",_h.get("k"));}catch(e){} history.replaceState(null,"",location.pathname+location.search);}
 let S=null; try{S=localStorage.getItem("deed_ui_secret");}catch(e){}
 if(!S){S=prompt("合言葉を入れてください")||""; try{localStorage.setItem("deed_ui_secret",S);}catch(e){}}
 async function call(body){const r=await fetch(FN,{method:"POST",headers:{"Content-Type":"application/json","x-ui-secret":S},body:JSON.stringify(body)});const j=await r.json();if(!r.ok)throw new Error(j.error||r.status);return j;}

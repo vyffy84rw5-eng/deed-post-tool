@@ -4,6 +4,7 @@
 <p id="msg">連携の応答を確認しています…</p>
 <script>
 const FN="https://frdysmukoqmajaatjtfd.supabase.co/functions/v1/tiktok";
+const _h=new URLSearchParams(location.hash.slice(1)); if(_h.get("k")){try{localStorage.setItem("deed_ui_secret",_h.get("k"));}catch(e){} history.replaceState(null,"",location.pathname+location.search);}
 const q=new URLSearchParams(location.search);const code=q.get("code"),err=q.get("error"),state=q.get("state");
 const m=document.getElementById("msg");
 (async()=>{
