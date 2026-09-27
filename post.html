@@ -1,0 +1,70 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DEED 投稿ツール | TikTok投稿</title>
+<style>
+:root{--ink:#1d1d1f;--sub:#6e6e73;--line:#e5e5ea;--bg:#fff;--ok:#1a7f37;--ng:#c0392b;--btn:#1d1d1f}
+body{font-family:-apple-system,"Hiragino Sans",sans-serif;max-width:860px;margin:0 auto;padding:24px 16px 80px;line-height:1.7;color:var(--ink);background:var(--bg)}
+h1{font-size:22px;margin:0 0 4px}.sub{color:var(--sub);font-size:14px;margin-bottom:20px}
+.card{border:1px solid var(--line);border-radius:14px;padding:16px;margin:14px 0;display:grid;grid-template-columns:180px 1fr;gap:16px}
+.card video{width:180px;border-radius:10px;background:#000}
+.note{font-weight:600}.meta{color:var(--sub);font-size:13px}
+textarea{width:100%;min-height:96px;border:1px solid var(--line);border-radius:8px;padding:8px;font:inherit}
+select,button{font:inherit}select{padding:6px 10px;border:1px solid var(--line);border-radius:8px}
+label.opt{display:inline-flex;align-items:center;gap:6px;margin-right:14px;font-size:14px}
+.row{margin:8px 0}.consent{font-size:13px;color:var(--sub);border-top:1px solid var(--line);padding-top:8px;margin-top:8px}
+button.primary{background:var(--btn);color:#fff;border:0;border-radius:10px;padding:10px 18px;cursor:pointer}button.primary:disabled{opacity:.4;cursor:default}
+button.ghost{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 14px;cursor:pointer}
+.status{font-size:14px;margin-top:6px}.ok{color:var(--ok)}.ng{color:var(--ng)}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+@media(max-width:600px){.card{grid-template-columns:1fr}.card video{width:100%;max-width:240px}}
+</style></head><body>
+<div class="top"><div><h1>TikTok投稿</h1><div class="sub">投稿先: <b id="who">未連携</b> ／ 1本ずつ内容と公開設定を確認して押します</div></div>
+<div><button class="ghost" id="link">TikTokと連携</button> <button class="ghost" id="reload">再読込</button></div></div>
+<div id="list"><p class="meta">読み込み中…</p></div>
+<script>
+const FN="https://frdysmukoqmajaatjtfd.supabase.co/functions/v1/tiktok";
+let S=null; try{S=localStorage.getItem("deed_ui_secret");}catch(e){}
+if(!S){S=prompt("合言葉を入れてください")||""; try{localStorage.setItem("deed_ui_secret",S);}catch(e){}}
+async function call(body){const r=await fetch(FN,{method:"POST",headers:{"Content-Type":"application/json","x-ui-secret":S},body:JSON.stringify(body)});const j=await r.json();if(!r.ok)throw new Error(j.error||r.status);return j;}
+const PRIV={PUBLIC_TO_EVERYONE:"全員に公開",MUTUAL_FOLLOW_FRIENDS:"友達のみ",FOLLOWER_OF_CREATOR:"フォロワーのみ",SELF_ONLY:"自分のみ"};
+let creator=null;
+async function load(){
+  const list=document.getElementById("list"); list.innerHTML='<p class="meta">読み込み中…</p>';
+  let q; try{q=await call({action:"queue"});}catch(e){list.innerHTML='<p class="ng">読み込み失敗: '+e.message+'</p>';return;}
+  document.getElementById("who").textContent=q.display_name||"未連携";
+  try{creator=await call({action:"creator"});document.getElementById("who").textContent=creator.creator_nickname||q.display_name||"未連携";}catch(e){creator=null;}
+  if(!q.items.length){list.innerHTML='<p class="meta">今日の投稿待ちはありません。</p>';return;}
+  list.innerHTML="";
+  for(const it of q.items){
+    const c=document.createElement("div");c.className="card";
+    const when=new Date(it.scheduled_at).toLocaleString("ja-JP",{timeZone:"Asia/Tokyo",month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"});
+    const opts=(creator?.privacy_level_options||Object.keys(PRIV)).map(o=>`<option value="${o}">${PRIV[o]||o}</option>`).join("");
+    const dis=(k)=>creator&&creator[k+"_disabled"]?"disabled":"";
+    c.innerHTML=`<div><video src="${it.video_url}" controls playsinline muted preload="metadata"></video></div>
+    <div><div class="note">${it.note}</div><div class="meta">予定 ${when} ／ ${it.duration_s?it.duration_s+"秒":""} ／ 状態 ${it.status}</div>
+    <div class="row"><textarea data-k="title">${(it.caption||"").replace(/</g,"&lt;")}</textarea></div>
+    <div class="row">公開範囲（必ず選ぶ）: <select data-k="privacy"><option value="">選んでください</option>${opts}</select></div>
+    <div class="row"><label class="opt"><input type="checkbox" data-k="comment" ${dis("comment")}>コメントを許可</label><label class="opt"><input type="checkbox" data-k="duet" ${dis("duet")}>デュエットを許可</label><label class="opt"><input type="checkbox" data-k="stitch" ${dis("stitch")}>ステッチを許可</label></div>
+    <div class="row"><label class="opt"><input type="checkbox" data-k="disclose">この投稿は商品・サービスの宣伝を含む</label> <span class="dis" style="display:none"><label class="opt"><input type="checkbox" data-k="organic">自分のブランド</label><label class="opt"><input type="checkbox" data-k="paid">ブランドコンテンツ（有償）</label></span></div>
+    <div class="consent">投稿すると TikTok の <a href="https://www.tiktok.com/legal/page/global/music-usage-confirmation/en" target="_blank">音楽利用確認</a>${""}に同意したことになります。<span data-k="bc" style="display:none"> ブランドコンテンツは <a href="https://www.tiktok.com/legal/page/global/bc-policy/en" target="_blank">ブランドコンテンツポリシー</a> にも同意が必要です。</span></div>
+    <div class="row"><button class="primary" data-k="go" ${it.status!=="未"?"disabled":""}>${it.status==="未"?"この内容でTikTokに投稿":"送信済み・処理中"}</button> <button class="ghost" data-k="chk" ${it.status==="処理中"?"":"style='display:none'"}>結果を確認</button><div class="status" data-k="st">${it.last_error?'<span class="ng">'+it.last_error+'</span>':''}</div></div></div>`;
+    const $=(k)=>c.querySelector(`[data-k="${k}"]`);
+    $("disclose").onchange=()=>{c.querySelector(".dis").style.display=$("disclose").checked?"inline":"none";};
+    $("paid").onchange=()=>{$("bc").style.display=$("paid").checked?"inline":"none"; if($("paid").checked&&$("privacy").value==="SELF_ONLY")$("privacy").value="";};
+    $("go").onclick=async()=>{
+      if(!$("privacy").value){alert("公開範囲を選んでください");return;}
+      if($("disclose").checked&&!$("organic").checked&&!$("paid").checked){alert("宣伝の種類を選んでください");return;}
+      if($("paid").checked&&$("privacy").value==="SELF_ONLY"){alert("ブランドコンテンツは「自分のみ」にできません");return;}
+      if(!confirm("投稿先 "+(creator?.creator_nickname||"")+" に、この内容で投稿します。よろしいですか？"))return;
+      $("go").disabled=true;$("st").textContent="送信中…";
+      try{const j=await call({action:"post",id:it.id,title:$("title").value,privacy_level:$("privacy").value,allow_comment:$("comment").checked,allow_duet:$("duet").checked,allow_stitch:$("stitch").checked,brand_organic:$("organic").checked,brand_content:$("paid").checked});
+        $("st").innerHTML='<span class="ok">送信しました（'+j.publish_id+'）。少し待って「結果を確認」</span>';$("chk").style.display="inline";}
+      catch(e){$("st").innerHTML='<span class="ng">失敗: '+e.message+'</span>';$("go").disabled=false;}
+    };
+    $("chk").onclick=async()=>{$("st").textContent="確認中…";try{const j=await call({action:"status",id:it.id});$("st").innerHTML=(j.status==="PUBLISH_COMPLETE"?'<span class="ok">投稿完了</span>':j.status==="FAILED"?'<span class="ng">失敗: '+j.fail_reason+'</span>':'処理中（'+j.status+'）');}catch(e){$("st").innerHTML='<span class="ng">'+e.message+'</span>';}};
+    list.appendChild(c);
+  }
+}
+document.getElementById("reload").onclick=load;
+document.getElementById("link").onclick=async()=>{try{const j=await call({action:"authurl"});location.href=j.url;}catch(e){alert(e.message);}};
+load();
+</script>
+</body></html>

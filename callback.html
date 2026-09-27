@@ -1,12 +1,23 @@
 <!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DEED 投稿ツール | 連携</title>
-<style>body{font-family:-apple-system,"Hiragino Sans",sans-serif;max-width:720px;margin:40px auto;padding:0 16px;line-height:1.8;color:#222;background:#fff}code{background:#f3f3f3;padding:2px 6px;border-radius:4px;word-break:break-all}</style></head><body>
+<style>body{font-family:-apple-system,"Hiragino Sans",sans-serif;max-width:720px;margin:40px auto;padding:0 16px;line-height:1.8;color:#222;background:#fff}code{background:#f3f3f3;padding:2px 6px;border-radius:4px;word-break:break-all}a{color:#0a58ca}</style></head><body>
 <h1>TikTok連携</h1>
 <p id="msg">連携の応答を確認しています…</p>
 <script>
+const FN="https://frdysmukoqmajaatjtfd.supabase.co/functions/v1/tiktok";
 const q=new URLSearchParams(location.search);const code=q.get("code"),err=q.get("error"),state=q.get("state");
 const m=document.getElementById("msg");
-if(err){m.textContent="連携は許可されませんでした（"+err+"）。この画面を閉じてください。";}
-else if(code){m.innerHTML="連携コードを受け取りました。このコードを担当者に伝えてください。<br><code>"+code+"</code>"+(state?"<br>state: <code>"+state+"</code>":"");}
-else{m.textContent="このページは、TikTokの連携画面から戻ってきたときに使うものです。";}
+(async()=>{
+  if(err){m.textContent="連携は許可されませんでした（"+err+"）。この画面を閉じてください。";return;}
+  if(!code){m.textContent="このページは、TikTokの連携画面から戻ってきたときに使うものです。";return;}
+  let s=null; try{s=localStorage.getItem("deed_ui_secret");}catch(e){}
+  if(!s){s=prompt("合言葉を入れてください"); try{localStorage.setItem("deed_ui_secret",s||"");}catch(e){}}
+  m.textContent="TikTokに確認中…";
+  try{
+    const r=await fetch(FN,{method:"POST",headers:{"Content-Type":"application/json","x-ui-secret":s||""},body:JSON.stringify({action:"auth",code,state})});
+    const j=await r.json();
+    if(j.ok){m.innerHTML="連携できました。投稿先: <b>"+(j.display_name||"")+"</b>"+(j.username?" (@"+j.username+")":"")+'<br><a href="post.html">投稿画面へ</a>';}
+    else{m.textContent="連携に失敗しました: "+(j.error||JSON.stringify(j));}
+  }catch(e){m.textContent="通信に失敗しました: "+e;}
+})();
 </script>
 </body></html>
