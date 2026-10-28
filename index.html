@@ -1,6 +1,105 @@
-<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DEED 投稿ツール</title>
-<style>body{font-family:-apple-system,"Hiragino Sans",sans-serif;max-width:720px;margin:40px auto;padding:0 16px;line-height:1.8;color:#222;background:#fff}h1{font-size:22px}a{color:#0a58ca}</style></head><body>
-<h1>DEED 投稿ツール</h1>
-<p>パーソナルジムDEEDが、自ジムのSNSアカウントへ動画を予約投稿するために運用している社内向けツールです。一般公開のサービスではありません。</p>
-<ul><li><a href="post.html">投稿画面（担当者のみ）</a></li><li><a href="privacy.html">プライバシーポリシー</a></li><li><a href="terms.html">利用規約</a></li></ul>
-</body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DEED Post Tool</title>
+<meta name="description" content="DEED Post Tool lets Personal Gym DEED schedule and publish its own short training videos to its TikTok account.">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="1024x1024" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+:root{--ink:#1d1d1f;--sub:#6e6e73;--line:#e5e5ea;--soft:#f5f5f7;--accent:#111}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;color:var(--ink);background:#fff;line-height:1.7}
+a{color:#0a58ca}
+header{border-bottom:1px solid var(--line)}
+.bar{max-width:960px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.bar img{width:36px;height:36px;border-radius:8px;border:1px solid var(--line)}
+.bar b{font-size:17px}
+.bar nav{margin-left:auto;display:flex;gap:18px;font-size:14px;flex-wrap:wrap}
+.bar nav a{color:var(--ink);text-decoration:none}
+main{max-width:960px;margin:0 auto;padding:0 20px 60px}
+.hero{display:flex;gap:32px;align-items:center;padding:56px 0 40px;flex-wrap:wrap}
+.hero img{width:160px;height:160px;border-radius:32px;border:1px solid var(--line)}
+.hero h1{font-size:38px;line-height:1.2;margin:0 0 12px}
+.hero p{font-size:18px;color:var(--sub);margin:0;max-width:560px}
+section{padding:34px 0;border-top:1px solid var(--line)}
+h2{font-size:24px;margin:0 0 18px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{background:var(--soft);border-radius:16px;padding:20px}
+.card h3{margin:0 0 6px;font-size:17px}
+.card p{margin:0;font-size:15px;color:#333}
+ol.steps{margin:0;padding-left:22px}
+ol.steps li{margin:0 0 10px;font-size:16px}
+.ja{color:var(--sub);font-size:15px}
+table{border-collapse:collapse;width:100%;font-size:15px;table-layout:fixed}
+td,th{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top;word-break:break-word}
+th{width:34%;font-weight:600}
+footer{border-top:1px solid var(--line);color:var(--sub);font-size:14px}
+footer .in{max-width:960px;margin:0 auto;padding:22px 20px;display:flex;gap:18px;flex-wrap:wrap}
+@media (max-width:720px){.grid{grid-template-columns:1fr}.hero{padding:36px 0 28px}.hero h1{font-size:30px}.hero img{width:112px;height:112px;border-radius:24px}}
+</style>
+</head>
+<body>
+<header><div class="bar">
+  <img src="favicon.png" alt="DEED Post Tool icon">
+  <b>DEED Post Tool</b>
+  <nav><a href="#features">Features</a><a href="#how">How it works</a><a href="#data">Data</a><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a></nav>
+</div></header>
+
+<main>
+<div class="hero">
+  <img src="favicon.png" alt="DEED Post Tool icon">
+  <div>
+    <h1>Schedule and publish your gym's short videos to TikTok.</h1>
+    <p>DEED Post Tool is the publishing tool used by Personal Gym DEED (Shinjuku, Tokyo) to post its own training and workout videos to its TikTok account at planned times.</p>
+    <p class="ja" style="margin-top:10px">パーソナルジムDEED（東京都新宿区）が、自ジムで制作したトレーニング動画を、自ジムのTikTokアカウントへ予定どおりに投稿するための道具です。</p>
+  </div>
+</div>
+
+<section id="features">
+  <h2>Features</h2>
+  <div class="grid">
+    <div class="card"><h3>Posting queue</h3><p>Videos made by the gym are lined up with a caption and a planned date and time.</p></div>
+    <div class="card"><h3>Review before posting</h3><p>Staff see the video, caption and privacy setting on one screen and confirm before anything is sent to TikTok.</p></div>
+    <div class="card"><h3>Official TikTok APIs</h3><p>Uses TikTok Login Kit for sign-in and the Content Posting API (Direct Post) to publish. No passwords are stored.</p></div>
+    <div class="card"><h3>Status check</h3><p>After posting, the tool shows whether TikTok finished processing the video.</p></div>
+    <div class="card"><h3>One account only</h3><p>The tool is used only with the gym's own TikTok account (@deed_gym).</p></div>
+    <div class="card"><h3>Disconnect anytime</h3><p>Access can be revoked from TikTok settings. Stored tokens are then deleted.</p></div>
+  </div>
+</section>
+
+<section id="how">
+  <h2>How it works</h2>
+  <ol class="steps">
+    <li><b>Connect.</b> A gym staff member signs in with TikTok (Login Kit) and approves the requested permissions: basic profile, video upload and video publish.</li>
+    <li><b>Prepare.</b> The gym's content team adds a finished video (MP4, vertical 9:16) and its caption to the posting queue.</li>
+    <li><b>Review.</b> On the posting screen, staff check the video preview, caption, privacy level and interaction settings, then press Post.</li>
+    <li><b>Publish.</b> The tool sends the video to TikTok through the Content Posting API and shows the result.</li>
+  </ol>
+  <p class="ja">使い方：①担当者がTikTokでログインして許可 ②完成した動画と説明文を並べる ③投稿画面で中身と公開設定を確かめて「投稿」 ④TikTokの公式の仕組みで投稿され、結果が表示されます。</p>
+</section>
+
+<section id="data">
+  <h2>Data we use</h2>
+  <table>
+    <tr><th>What</th><td>TikTok open_id, display name, avatar, access token, privacy options for posting, and basic post status.</td></tr>
+    <tr><th>Why</th><td>Only to publish the gym's own videos and to check that each post succeeded.</td></tr>
+    <tr><th>Sharing</th><td>Never sold or shared with third parties, except where required by law.</td></tr>
+    <tr><th>Deletion</th><td>When the TikTok connection is removed, stored data for that account is deleted.</td></tr>
+  </table>
+  <p>Full details: <a href="privacy.html">Privacy Policy</a> ・ <a href="terms.html">Terms of Service</a></p>
+</section>
+
+<section id="about">
+  <h2>About</h2>
+  <p>Personal Gym DEED is a personal training gym in Shinjuku, Tokyo. This tool is operated by DEED for its own social media accounts and is not offered as a service to other businesses.</p>
+  <p>Contact: Instagram <a href="https://www.instagram.com/deed_gym_official/">@deed_gym_official</a> (direct message).</p>
+  <p>Staff posting screen: <a href="post.html">post.html</a> (staff only)</p>
+</section>
+</main>
+
+<footer><div class="in"><span>© 2026 Personal Gym DEED</span><a href="terms.html">Terms of Service</a><a href="privacy.html">Privacy Policy</a></div></footer>
+</body>
+</html>
